@@ -1,33 +1,55 @@
 import fetch from 'isomorphic-fetch'
 import Error from 'next/error'
+import Link from 'next/link'
+
+import StoryList from '../components/StoryList'
+import Layout from '../components/Layout'
 
 class Index extends React.Component {
-    static async getInitialProps() {
+    static async getInitialProps({ req, res, query }) {
         let stories = []
+        let page;
 
         try {
-            const res = await fetch('https://node-hnapi.herokuapp.com/news?page=1')
+            page = +query.page || 1
+
+            const res = await fetch(`https://node-hnapi.herokuapp.com/news?page=${page}`)
 
             stories = await res.json()
         } catch (err) {
             console.log(err)
         }
 
-        return { stories }
+        return { page, stories }
     }
 
     render() {
-        const { stories } = this.props
+        const { page, stories } = this.props
 
         if (!stories.length) return <Error statusCode={503} />
 
         return (
-            <div>
-                <h1>Hacker next</h1>
-                <div>
-                    {stories.map(s => <h2 key={s.id}>{s.title}</h2>)}
-                </div>
-            </div>
+            <Layout title='Hacker Next' description='Hacker news stories list'>
+                <StoryList stories={stories} />
+
+                <footer>
+                    <Link href={`/?page=${page + 1}`}>
+                        <a>Next Page - {page + 1}</a>
+                    </Link>
+                </footer>
+
+                <style jsx>{`
+                    footer {
+                        padding: 1rem;
+                    }
+
+                    footer a {
+                        font-weight: bold;
+                        color: black;
+                        text-decoration: none;
+                    }
+                `}</style>
+            </Layout>
         )
     }
 }
