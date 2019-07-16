@@ -22,7 +22,14 @@ export const LayoutStyles = () =>
 
         nav .main-title {
             font-weight: bold;
-    }
+
+        }
+
+        nav .back-button {
+            font-size: 1.3rem;
+            padding-right: 1rem;
+            cursor: pointer;
+        }
     `}</style>
 
 export const GlobalStyles = () =>
